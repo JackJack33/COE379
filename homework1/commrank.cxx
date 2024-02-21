@@ -37,8 +37,7 @@ int main() {
 	   << endl;
   cerr << proctext.str(); proctext.clear();
 
-  ofstream outfile("out.txt");
-  outfile << "(" << procno << ", " << nprocs << ")" << endl;
+  ofstream outfile(to_string(procno) + ".txt");
   outfile.close();
   
   // Exercise part 2:
