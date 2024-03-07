@@ -8,7 +8,7 @@ threads_list=(8 16 32)
 echo "threads vectorsize sequential_time parallel_time" > "$output_file"
 
 for threads in "${threads_list[@]}"; do
-    for (( vectorsize = 1; vectorsize <= 1; vectorsize+=25 )); do
+    for (( vectorsize = 1; vectorsize <= 10000; vectorsize+=25 )); do
 
 	output=$(OMP_NUM_THREADS=$threads ./vectorsum $vectorsize)
 	sequential_time=$(echo "$output" | grep "Sequential" | awk '{print $3}')
