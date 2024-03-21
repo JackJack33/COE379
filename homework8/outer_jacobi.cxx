@@ -49,15 +49,17 @@ int main(int argc,char **argv) {
     double error0,error;
     double tstart = omp_get_wtime();
     int iteration;
-    
-    for ( iteration=0; ; ++iteration ) {
+
+    bool cont_loop = true;
+
+#pragma omp parallel private(iteration)
+    for ( iteration=0; cont_loop; ++iteration ) {
       /*
        * Compute the error
        * In iteration 0, record the error
        * After that, exit if reduction by 10^5
        */
       error=0.;
-#pragma omp parallel
 #pragma omp for schedule(static) nowait
       for ( long int i=0; i<vectorsize; ++i ) 
 	error += pow( xvector[i]-solution[i],2 );
@@ -67,14 +69,13 @@ int main(int argc,char **argv) {
       if (iteration==0)
 	error0 = error;
       else if (error<error0*1.e-3)
-	break;
+	cont_loop = false;
       }
       /*
        * Compute the next iteration 
        * - conpute into a temp vector
        * - copy temp back into x
        */
-#pragma omp parallel
 #pragma omp for schedule(static) nowait
       for ( long int i=0; i<vectorsize; ++i ) {
 	double nxb = rhs[i];
@@ -85,7 +86,6 @@ int main(int argc,char **argv) {
 	tvector[i] = nxb/diag;
 	// COMMENT OUT THE NEXT THREE LINES TO GET A GAUSS-JORDAN METHOD
       }
-#pragma omp parallel
 #pragma omp for schedule(static) nowait
       for ( long int i=0; i<vectorsize; ++i ) {
 	xvector[i] = tvector[i];
