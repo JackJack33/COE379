@@ -39,55 +39,64 @@ int main(int argc,char **argv) {
     *tvector = (double*)malloc(vectorsize*sizeof(double));
   if (!solution || !rhs || !xvector || !tvector) {
     printf("Allocation failed\n"); return 1; }
-  for ( long int i=0; i<vectorsize; ++i ) {
-    solution[i] = 1.; rhs[i] = diag-2.; xvector[i] = i*1./vectorsize;
-  }
-  rhs[0] = diag-1.; rhs[vectorsize-1] = diag-1.;
+  
+#pragma omp parallel for schedule(static)
+    for ( long int i=0; i<vectorsize; ++i ) {
+      solution[i] = 1.; rhs[i] = diag-2.; xvector[i] = i*1./vectorsize;
+    }
+    rhs[0] = diag-1.; rhs[vectorsize-1] = diag-1.;
+    
+    double error0,error;
+    double tstart = omp_get_wtime();
+    int iteration;
 
-  double error0,error;
-  double tstart = omp_get_wtime();
-  int iteration;
-  for ( iteration=0; ; ++iteration ) {
-    /*
-     * Compute the error
-     * In iteration 0, record the error
-     * After that, exit if reduction by 10^5
-     */
-    error=0.;
-#pragma omp parallel for reduction(+:error)
-    for ( long int i=0; i<vectorsize; ++i ) 
-      error += pow( xvector[i]-solution[i],2 );
-    error = sqrt(error);
-    //printf("[%d] error=%e\n",iteration,error);
-    if (iteration==0)
-      error0 = error;
-    else if (error<error0*1.e-3) break;
-    /*
-     * Compute the next iteration 
-     * - conpute into a temp vector
-     * - copy temp back into x
-     */
-#pragma omp parallel for
-    for ( long int i=0; i<vectorsize; ++i ) {
-      double nxb = rhs[i];
-      if (i<vectorsize-1) 
-	nxb += xvector[i+1];
-      if (i>0)
-      	nxb +=xvector[i-1];
-      tvector[i] = nxb/diag;
-      // COMMENT OUT THE NEXT THREE LINES TO GET A GAUSS-JORDAN METHOD
+    bool cont_loop = true;
+
+#pragma omp parallel private(iteration)
+    for ( iteration=0; cont_loop; ++iteration ) {
+      /*
+       * Compute the error
+       * In iteration 0, record the error
+       * After that, exit if reduction by 10^5
+       */
+      error=0.;
+#pragma omp for schedule(static) nowait
+      for ( long int i=0; i<vectorsize; ++i ) 
+	error += pow( xvector[i]-solution[i],2 );
+      error = sqrt(error);
+      //printf("[%d] error=%e\n",iteration,error);
+      {
+      if (iteration==0)
+	error0 = error;
+      else if (error<error0*1.e-3)
+	cont_loop = false;
+      }
+      /*
+       * Compute the next iteration 
+       * - conpute into a temp vector
+       * - copy temp back into x
+       */
+#pragma omp for schedule(static) nowait
+      for ( long int i=0; i<vectorsize; ++i ) {
+	double nxb = rhs[i];
+	if (i<vectorsize-1) 
+	  nxb += xvector[i+1];
+	if (i>0)
+	  nxb +=xvector[i-1];
+	tvector[i] = nxb/diag;
+	// COMMENT OUT THE NEXT THREE LINES TO GET A GAUSS-JORDAN METHOD
+      }
+#pragma omp for schedule(static) nowait
+      for ( long int i=0; i<vectorsize; ++i ) {
+	xvector[i] = tvector[i];
+      }
+      /* Print out for debugging */
+      /* for ( long int i=0; i<vectorsize; ++i ) */
+      /*   printf("%5.2f ",xvector[i]); printf("\n"); */
     }
-#pragma omp parallel for
-    for ( long int i=0; i<vectorsize; ++i ) {
-      xvector[i] = tvector[i];
-    }
-    /* Print out for debugging */
-    /* for ( long int i=0; i<vectorsize; ++i ) */
-    /*   printf("%5.2f ",xvector[i]); printf("\n"); */
-  }
   double duration = omp_get_wtime()-tstart;
   printf("Converged in %d iterations to %e reduction in time=%7.3f\n",
 	 iteration,error/error0,duration);
-
+  
   return 0;
 }
