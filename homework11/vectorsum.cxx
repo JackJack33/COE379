@@ -79,7 +79,7 @@ int main( int argc,char **argv ) {
     printf("Sequential t= %8.5f sec\n",duration);
   }
 
-#pragma omp single
+  #pragma omp single
   {
     double tstart = omp_get_wtime();
     double factor=1;
