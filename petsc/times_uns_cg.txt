@@ -1,5 +1,5 @@
 unsymmetry iterations
--1.0 iterations;
+-1.0 10000;
 -.8 7335
 -.6 779
 -.4 326
@@ -9,4 +9,4 @@ unsymmetry iterations
 .4 326
 .6 779
 .8 7335
-1.0 iterations;
+1.0 10000;
