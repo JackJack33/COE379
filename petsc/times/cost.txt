@@ -1,0 +1,13 @@
+ksp_type pc_type sub_pc_type PCSetUp Flops_per_sec Iterations MatMult
+cg bjacobi lu 6.4987e-02 3.633e+08 1 1
+cg bjacobi ilu 2.1746e-03 5.118e+08 50 50
+cg asm lu 6.7957e-02 3.483e+08 1 1
+cg asm ilu 6.3587e-03 4.350e+08 50 50
+bcgs bjacobi lu 6.3683e-02 3.781e+08 1 2
+bcgs bjacobi ilu 2.2262e-03 6.018e+08 38 76
+bcgs asm lu 6.8396e-02 3.568e+08 1 2
+bcgs asm ilu 6.9457e-03 5.150e+08 38 76
+gmres bjacobi lu 6.4223e-02 3.482e+08 1 1
+gmres bjacobi ilu 2.2785e-03 1.374e+09 73 75
+gmres asm lu 6.8529e-02 3.279e+08 1 1
+gmres asm ilu 6.3857e-03 1.212e+09 73 75
