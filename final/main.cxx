@@ -27,9 +27,9 @@ public:
     Color sceneColor = scene.color;
     for (int i = 0; i < width; i++) {
       for (int j = 0; j < height; j++) {
-	rayTheta = -halfFov + fov*float(i)/width;
-	rayPhi = inverseAspectRatio * (-halfFov + fov*float(j)/height);
-	rays.at(i).at(j) = new Ray(x,y,z,theta + rayTheta, phi+rayPhi, sceneColor);
+      	rayTheta = -halfFov + fov*float(i)/width;
+      	rayPhi = inverseAspectRatio * (-halfFov + fov*float(j)/height);
+	      rays.at(i).at(j) = new Ray(x,y,z,theta + rayTheta, phi+rayPhi, sceneColor);
       }
     }
   }
@@ -37,21 +37,41 @@ public:
   void March(int iter) {
     for (int i = 0; i < width; i++) {
       for (int j = 0; j < height; j++) {
-      ray:
-	// individual ray
-	for (int k = 0; k < iter; k++) {
-	  Ray newRay = rays.at(i).at(j);
-	  vector<float> typedMinSDFs = scene.typedMinSDFs(newRay.x, newRay.y, newRay.z);
-	  for (int l = 0; l < typedMinSDFs.size(); l++) {
-	    if (abs(typedMinSDFs.at(l)) <= collisionThreshold) {
-	      // collided
-	      goto ray;
-	  }
-	  newRay.Cast();
-	}
+	      // individual ray
+        bool terminate = false;
+      	for (int k = 0; k < iter && !terminate; k++) {
+	        *Ray rayRef = &rays.at(i).at(j);
+          SceneObject minObject = scene.closestObject(rayRef->x, rayRef->y, rayRef->z);
+          float d = abs(minObject.sDF(rayRef->x, rayRef->y, rayRef->z));
+          if (d < collisionThreshold) {
+            switch(minObject.type) {
+              case OPAQUE:
+                // end ray
+                terminate = true;
+                rayRef->color += minObject.color;
+                break;
+              case TRANSPARENT:
+                // move forward to iterate through object
+                rayRef->color += minObject.color;
+                break;
+              case LENSE:
+                // extraParam.at(0) = refractive index
+                // refract from normal to iterate through object
+                rayRef->color += minObject.color;
+                break;
+              case MIRROR:
+                // reflect from normal
+                rayRef->color += minObject.color;
+                break;
+            }
+          }
+          if (!terminate) {
+            rayRef->Cast(d);
+          }
+        }
       }
     }
-  }
+	}
 };
 
 class Ray {
@@ -69,15 +89,19 @@ public:
   } 
 };
   
-enum class SceneObjectType {OPAQUE, TRANSLUCENT, LENSE, MIRROR, LAST};
+enum class SceneObjectType {OPAQUE, TRANSPARENT, LENSE, MIRROR, LAST};
 class SceneObject {
 public:
   SceneObjectType type;
   Color color;
+  vector<float> extraParam;
   function< float(float, float, float) > sDF; //Positional data stored in SDF equation
   
   SceneObject(SceneObjectType type_in, Color color_in, function< float(float, float, float) > sDF_in) :
     type(type_in), color(color_in), sDF(sDF_in) {};
+
+  SceneObject(SceneObjectType type_in, Color color_in, vector<float> extraParam_in, function< float(float, float, float) > sDF_in) :
+    type(type_in), color(color_in), extraParam(extraParam_in) sDF(sDF_in) {};
 };
 
 class Scene {
@@ -87,19 +111,20 @@ public:
   
   Scene(vector<SceneObject> objects_in, Color backgroundColor_in) :
     objects(objects_in), backgroundColor(backgroundColor_in) {};
-  
-  vector<float> typedMinSDFs(float x, float y, float z) {
-    vector<float> dv;
-    for (int i = 0; i < SceneObjectType.LAST; i++) {
-      float d = FLOAT.MAX;
-      for (SceneObject object : objects) {
-	if (object.type != type) { continue; }
-	d = min(d, object.sDF(x,y,z));
+
+  // Good place for allreduce(min)  
+  SceneObject closestObject(float x, float y, float z) {
+    float minDist = FLOAT.MAX;
+    SceneObject minObject = NULL;
+    for (SceneObject object : objects) {
+      d = object.sDF(x, y, z);
+      if (d < minDist) {
+        minDist = d;
+        minObject = object;
       }
-      dv.push_back(d);
     }
-    return dv;
-  }
+    return minObject;
+  };
 };
   
 class Color {
@@ -108,6 +133,9 @@ public:
 
   Color(int r_in, int g_in, int b_in) :
     r(r_in), g(g_in), b(b_in) {};
+
+
+  // define += operator
 };
 
 int main() {
