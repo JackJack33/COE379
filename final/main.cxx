@@ -5,8 +5,13 @@
 #include <iostream>
 #include <fstream>
 
-float sphereSDF(float x, float y, float z, float r) {
-  return std::sqrt( x*x + y*y + z*z) - r;
+float sphereSDF(float x_in, float y_in, float z_in,
+		float x, float y, float z, float r) {
+  float dx = (x - x_in);
+  float dy = (y - y_in);
+  float dz = (z - z_in);
+  std::cout << "[dist: " << std::sqrt( dx*dx + dy*dy + dz*dz) - r << "\nx_in: " << x_in << " y_in: " << y_in << " z_in: " << z_in << "\nx: " << x << " y: " << y << " z: " << z << "]" << std::endl;
+  return std::sqrt( dx*dx + dy*dy + dz*dz) - r;
 }
 
 float planeSDF(float x, float y, float z, float h) {
@@ -18,17 +23,14 @@ int main() {
   Color red(255, 0, 0);
   Color blue(0, 0, 255);
   Color black(0, 0, 0);
-
+  
   SceneObject redSphere(SceneObjectType::OPAQUE, red,
-			[](float x, float y, float z) { return sphereSDF(x, y, z, 2); });
-  SceneObject bluePlane(SceneObjectType::OPAQUE, blue,
-			[](float x, float y, float z) { return planeSDF(x, y, z, -1); });
+			[](float x, float y, float z) { return sphereSDF(x, y, z, 5, 0, 0, 1); });
 
-  std::vector<SceneObject> objects = {redSphere,
-				      bluePlane};
+  std::vector<SceneObject> objects = {redSphere};
 
   Scene scene(objects, black);
-  Camera camera(0, 0, 0, 0, 0, 70, 8, 8, scene, 0.001);
+  Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 8, 8, scene, 0.00001);
 
   camera.InitializeRays();
   camera.March(10);
