@@ -32,7 +32,7 @@ public:
 	      rays.at(i).at(j) = new Ray(x,y,z,theta + rayTheta, phi+rayPhi, sceneColor);
       }
     }
-  }
+  };
 
   void March(int iter) {
     for (int i = 0; i < width; i++) {
@@ -71,7 +71,7 @@ public:
         }
       }
     }
-	}
+  };
 };
 
 class Ray {
