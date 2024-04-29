@@ -10,7 +10,6 @@ float sphereSDF(float x_in, float y_in, float z_in,
   float dx = (x - x_in);
   float dy = (y - y_in);
   float dz = (z - z_in);
-  std::cout << "[dist: " << std::sqrt( dx*dx + dy*dy + dz*dz) - r << "\nx_in: " << x_in << " y_in: " << y_in << " z_in: " << z_in << "\nx: " << x << " y: " << y << " z: " << z << "]" << std::endl;
   return std::sqrt( dx*dx + dy*dy + dz*dz) - r;
 }
 
@@ -30,10 +29,10 @@ int main() {
   std::vector<SceneObject> objects = {redSphere};
 
   Scene scene(objects, black);
-  Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 8, 8, scene, 0.00001);
+  Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001);
 
   camera.InitializeRays();
-  camera.March(10);
+  camera.March(5);
 
   std::string output = camera.ExportRayColors();
 

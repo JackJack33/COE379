@@ -42,7 +42,6 @@ SceneObject Scene::closestObject(float x, float y, float z) {
       minDist = d;
       minObject = object;
     }
-    std::cout << "mind: " << d << std::endl;
   }
   return minObject;
 }
@@ -96,7 +95,6 @@ void Camera::March(int iter) {
 	  }
 	}
 	if (!terminate) {
-	  std::cout << "units: " << d << std::endl;
 	  rayRef->Cast(d);
 	}
       }
