@@ -9,11 +9,11 @@ Color::Color() {};
 
 Color::Color(int r_in, int g_in, int b_in) : r(r_in), g(g_in), b(b_in) {};
 
-Color::Interpolate(Color color1, Color color2, float t) {
+Color Color::Interpolate(Color color1, Color color2, float t) {
   int r = static_cast<int>(color1.r * (1.0f - t) + color2.r * t);
   int g = static_cast<int>(color1.g * (1.0f - t) + color2.g * t);
   int b = static_cast<int>(color1.b * (1.0f - t) + color2.b * t);
-  return Color(r,g,b)
+  return Color(r,g,b);
 }
 
 SceneObject::SceneObject() {};
@@ -27,7 +27,7 @@ SceneObject::SceneObject(SceneObjectType type_in, Color color_in, std::vector<fl
 Ray::Ray() {};
 
 Ray::Ray(float x_in, float y_in, float z_in, float theta_in, float phi_in, Color color_in) :
-  x(x_in), y(y_in), z(z_in), theta(theta_in), phi(phi_in), color(color_in) {iterations = 0};
+  x(x_in), y(y_in), z(z_in), theta(theta_in), phi(phi_in), color(color_in) { iterations = 0; }
 
 void Ray::Cast(float d) {
   x += d * cos(theta) * cos(phi);
@@ -88,13 +88,13 @@ void Camera::March(int iter) {
 
 	if (d < collisionThreshold) {
 
-      float distanceToCamera = DistanceToCamera(rayRef-> x, rayRef->y, rayRef->z);
-      float t = std::clamp((distanceToCamera - distanceCutoff) / (maxDistance - distanceCutoff), 0.0f, 1.0f);
-
+	  float distanceToCamera = DistanceToCamera(rayRef-> x, rayRef->y, rayRef->z);
+	  float t = distanceToCamera / distanceCutoff;
+	  
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
 	    terminate = true;
-	    rayRef->color = Color::interpolate(minObject.color, scene.color, t);
+	    rayRef->color = Color::Interpolate(minObject.color, scene.color, t);
 	    break;
 	  case SceneObjectType::TRANSPARENT:
 	    rayRef->color = minObject.color;
