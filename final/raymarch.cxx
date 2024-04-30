@@ -28,7 +28,7 @@ std::vector<float> SceneObject::CalculateNormal(float x, float y, float z, float
   float dx = sDF(x + eps, y, z) - sDF(x - eps, y, z);
   float dy = sDF(x, y + eps, z) - sDF(x, y - eps, z);
   float dz = sDF(x, y, z + eps) - sDF(x, y, z - eps);
-
+  
   float mag = std::sqrt(dx*dx + dy*dy + dz*dz);
   if (mag != 0.0f) { // i dont think this can show up, but im not sure what to do in the case that this would be zero
     dx /= mag;
@@ -110,19 +110,19 @@ void Camera::March(int iter) {
       bool terminate = false;
       for (int k = 0; k < iter && !terminate; k++) {
 	Ray *rayRef = &rays.at(i).at(j);
-
+	
 	SceneObject minObject = scene.closestObject(rayRef->x, rayRef->y, rayRef->z);
 	float d = std::abs(minObject.sDF(rayRef->x, rayRef->y, rayRef->z));
-
+	
 	if (d < collisionThreshold) {
-
+	  
 	  float t = 1 - 1 / (1 + (0.2)*std::log(rayRef->iterations + 1));
 	  Color finalColor = Color::Interpolate(minObject.color, Color(0,0,0), t); // Ambient Occlusion
-	  
-	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);
+
+	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);	  
 	  t = squaredDistanceToCamera / (distanceCutoff*distanceCutoff);
 	  finalColor = Color::Interpolate(finalColor, scene.color, t); // Distance Fog
-
+	  
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
 	    terminate = true;
@@ -155,6 +155,53 @@ void Camera::March(int iter) {
 	    break;
 	  }
 	}
+
+	
+	
+	if (d < collisionThreshold) {
+	  
+	  float t = 1 - 1 / (1 + (0.2)*std::log(rayRef->iterations + 1));
+	  Color finalColor = Color::Interpolate(minObject.color, Color(0,0,0), t); // Ambient Occlusion
+
+	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);	  
+	  t = squaredDistanceToCamera / (distanceCutoff*distanceCutoff);
+	  finalColor = Color::Interpolate(finalColor, scene.color, t); // Distance Fog
+	  
+	  switch (minObject.type) {
+	  case SceneObjectType::OPAQUE:
+	    terminate = true;
+	    rayRef->color = finalColor;
+	    break;
+
+	  case SceneObjectType::TRANSPARENT:
+	    rayRef->color = minObject.color;
+	    break;
+
+	  case SceneObjectType::LENSE:
+	    rayRef->color = minObject.color;
+	    break;
+
+	  case SceneObjectType::MIRROR:
+	    std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
+	    float normalTheta = surfaceNormal[0];
+	    float normalPhi = surfaceNormal[1];
+	    
+	    float reflectedTheta = 2*(normalTheta - M_PI/2) - rayRef->theta;
+	    float reflectedPhi = rayRef->phi;
+	    if (abs(normalTheta - M_PI/2) > 0.0001) { // hacky but whatever
+	      reflectedPhi = 2*(normalPhi - M_PI/2) - rayRef->phi;
+	    }
+	    
+	    rayRef->theta = reflectedTheta;
+	    rayRef->phi = reflectedPhi;
+	    d = 0.1; // Turn around and march a bit so as not to collide with the same spot
+	    
+	    break;
+	  }
+	}
+
+	if (d >= 1e10) { terminate = true; }
+	
 	if (!terminate) {
 	  rayRef->Cast(d);
 	  rayRef->iterations++;

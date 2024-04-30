@@ -28,17 +28,19 @@ int main() {
 			[](float x, float y, float z) { return sphereSDF(x, y, z, 5, 0, 0, 1); });
   SceneObject greenSphere(SceneObjectType::OPAQUE, green,
 			  [](float x, float y, float z) {return sphereSDF(x, y, z, 15, -3, 0, 3); });
-  SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
+  SceneObject blueSphere(SceneObjectType::MIRROR, blue,
 			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });
   SceneObject mirrorPlane(SceneObjectType::MIRROR, red,
 			   [](float x, float y, float z) { return planeSDF(x, y, z, -5); });
+  SceneObject mirrorSphere(SceneObjectType::MIRROR, red,
+  			   [](float x, float y, float z) { return sphereSDF(x, y, z, 8, -1, -1, 1); });
 
-  std::vector<SceneObject> objects = {redSphere, blueSphere, greenSphere, mirrorPlane};
-
+  std::vector<SceneObject> objects = {redSphere, blueSphere, greenSphere, mirrorSphere};
+  
   Scene scene(objects, black);
   Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.001, 1000);
-  
-  camera.InitializeRays();
+
+  camera.InitializeRays(); 
   camera.March(100);
   
   std::string output = camera.ExportRayColors();
