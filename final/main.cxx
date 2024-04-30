@@ -31,7 +31,7 @@ int main() {
   SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
 			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });
   SceneObject mirrorPlane(SceneObjectType::MIRROR, red,
-			   [](float x, float y, float z) { return planeSDF(x, y, z, -3); });
+			   [](float x, float y, float z) { return planeSDF(x, y, z, -2); });
 
   std::vector<SceneObject> objects = {redSphere, greenSphere, blueSphere, mirrorPlane};
 
@@ -39,7 +39,7 @@ int main() {
   Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 100);
 
   camera.InitializeRays();
-  camera.March(5);
+  camera.March(20);
 
   std::string output = camera.ExportRayColors();
 
