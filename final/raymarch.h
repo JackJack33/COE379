@@ -67,7 +67,7 @@ public:
   
   void InitializeRays();
   void March(int iter);
-  float DistanceToCamera(float x_in, float y_in, float z_in);
+  float SquaredDistanceToCamera(float x_in, float y_in, float z_in);
   
   std::string ExportRayColors();
 };

@@ -13,6 +13,7 @@ Color Color::Interpolate(Color color1, Color color2, float t) {
   int r = static_cast<int>(color1.r * (1.0f - t) + color2.r * t);
   int g = static_cast<int>(color1.g * (1.0f - t) + color2.g * t);
   int b = static_cast<int>(color1.b * (1.0f - t) + color2.b * t);
+  std::cout << r << " " << g << " " << b << std::endl;
   return Color(r,g,b);
 }
 
@@ -88,8 +89,8 @@ void Camera::March(int iter) {
 
 	if (d < collisionThreshold) {
 
-	  float distanceToCamera = DistanceToCamera(rayRef-> x, rayRef->y, rayRef->z);
-	  float t = distanceToCamera / distanceCutoff;
+	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);
+	  float t = squaredDistanceToCamera / (distanceCutoff*distanceCutoff);
 	  
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
@@ -115,11 +116,11 @@ void Camera::March(int iter) {
   }
 };
 
-float Camera::DistanceToCamera(float x_in, float y_in, float z_in) {
+float Camera::SquaredDistanceToCamera(float x_in, float y_in, float z_in) {
   float dx = x_in - x;
   float dy = y_in - y;
   float dz = z_in - z;
-  return std::sqrt(dx*dx + dy*dy + dz*dz);
+  return dx + dy + dz;
 };
 
 std::string Camera::ExportRayColors() {
