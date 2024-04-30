@@ -39,7 +39,7 @@ int main() {
   Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.001, 1000);
   
   camera.InitializeRays();
-  camera.March(10);
+  camera.March(20);
   
   std::string output = camera.ExportRayColors();
 
