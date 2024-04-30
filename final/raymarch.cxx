@@ -108,12 +108,14 @@ void Camera::March(int iter) {
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
       bool terminate = false;
+      std::cout << "_";
       for (int k = 0; k < iter && !terminate; k++) {
 	Ray *rayRef = &rays.at(i).at(j);
 
 	SceneObject minObject = scene.closestObject(rayRef->x, rayRef->y, rayRef->z);
 	float d = std::abs(minObject.sDF(rayRef->x, rayRef->y, rayRef->z));
 
+	std::cout << "-";
 	if (d < collisionThreshold) {
 
 	  float t = 1 + -1 / float(rayRef->iterations);
