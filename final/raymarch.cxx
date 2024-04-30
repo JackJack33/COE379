@@ -108,17 +108,15 @@ void Camera::March(int iter) {
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
       bool terminate = false;
-      std::cout << "_";
       for (int k = 0; k < iter && !terminate; k++) {
 	Ray *rayRef = &rays.at(i).at(j);
 
 	SceneObject minObject = scene.closestObject(rayRef->x, rayRef->y, rayRef->z);
 	float d = std::abs(minObject.sDF(rayRef->x, rayRef->y, rayRef->z));
 
-	std::cout << "-";
 	if (d < collisionThreshold) {
 
-	  float t = 1 + -1 / float(rayRef->iterations);
+	  float t = 1 - 1 / (1 + (0.2)*std::log(rayRef->iterations + 1));
 	  Color finalColor = Color::Interpolate(minObject.color, Color(0,0,0), t); // Ambient Occlusion
 	  
 	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);
@@ -127,7 +125,6 @@ void Camera::March(int iter) {
 
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
-	    std::cout << "O";
 	    terminate = true;
 	    rayRef->color = finalColor;
 	    break;
@@ -141,7 +138,6 @@ void Camera::March(int iter) {
 	    break;
 
 	  case SceneObjectType::MIRROR:
-	    std::cout << "X";
 	    std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
 	    float normalTheta = surfaceNormal[0];
 	    float normalPhi = surfaceNormal[1];
