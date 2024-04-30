@@ -37,10 +37,10 @@ int main() {
 
   Scene scene(objects, black);
   Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 1000);
-
+  
   camera.InitializeRays();
-  camera.March(20);
-
+  camera.March(10);
+  
   std::string output = camera.ExportRayColors();
 
   std::ofstream outputFile("output.txt");

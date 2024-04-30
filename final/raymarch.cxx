@@ -13,7 +13,6 @@ Color Color::Interpolate(Color color1, Color color2, float t) {
   int r = static_cast<int>(color1.r * (1.0f - t) + color2.r * t);
   int g = static_cast<int>(color1.g * (1.0f - t) + color2.g * t);
   int b = static_cast<int>(color1.b * (1.0f - t) + color2.b * t);
-  if (g > 0) { std::cout << "G"; }
   return Color(r,g,b);
 }
 
@@ -46,8 +45,8 @@ std::vector<float> SceneObject::CalculateNormalSpherical(float x, float y, float
   float dy = cartesianNormal[1];
   float dz = cartesianNormal[2];
 
-  float theta = std::acos(dz);
-  float phi = std::atan2(dy, dx);
+  float theta = std::atan2(dy, dx);
+  float phi = std::asin(dz);
 
   return {theta, phi};
 };
@@ -113,7 +112,7 @@ void Camera::March(int iter) {
 	Ray *rayRef = &rays.at(i).at(j);
 
 	SceneObject minObject = scene.closestObject(rayRef->x, rayRef->y, rayRef->z);
-	float d = abs(minObject.sDF(rayRef->x, rayRef->y, rayRef->z));
+	float d = std::abs(minObject.sDF(rayRef->x, rayRef->y, rayRef->z));
 
 	if (d < collisionThreshold) {
 
@@ -143,12 +142,15 @@ void Camera::March(int iter) {
 	    float normalTheta = surfaceNormal[0];
 	    float normalPhi = surfaceNormal[1];
 	    
-	    float reflectedTheta = 2 * normalTheta - rayRef->theta;
-	    float reflectedPhi = 2 * normalPhi - rayRef->phi;
+	    float reflectedTheta = 2*(normalTheta - M_PI/2) - rayRef->theta;
+	    float reflectedPhi = rayRef->phi;
+	    if (abs(normalTheta - M_PI/2) > 0.0001) { // hacky but whatever
+	      reflectedPhi = 2*(normalPhi - M_PI/2) - rayRef->phi;
+	    }
 	    
 	    rayRef->theta = reflectedTheta;
 	    rayRef->phi = reflectedPhi;
-	    rayRef->Cast(collisionThreshold); // Turn around and march a bit so as not to collide with the same spot
+	    d = 0.1; // Turn around and march a bit so as not to collide with the same spot
 	    
 	    break;
 	  }
