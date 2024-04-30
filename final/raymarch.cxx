@@ -25,6 +25,34 @@ SceneObject::SceneObject(SceneObjectType type_in, Color color_in, std::function<
 SceneObject::SceneObject(SceneObjectType type_in, Color color_in, std::vector<float> extraParam_in, std::function<float(float, float, float)> sDF_in) :
   type(type_in), color(color_in), extraParam(extraParam_in), sDF(sDF_in) {};
 
+std::vector<float> SceneObject::CalculateNormal(float x, float y, float z, float eps=0.001) {
+  float dx = sDF(x + eps, y, z) - sDF(x - eps, y, z);
+  float dy = sDF(x, y + eps, z) - sDF(x, y - eps, z);
+  float dz = sDF(x, y, z + eps) - sDF(x, y, z - eps);
+
+  float mag = std::sqrt(dx*dx + dy*dy + dz*dz);
+  if (mag != 0.0f) { // i dont think this can show up, but im not sure what to do in the case that this would be zero
+    dx /= mag;
+    dy /= mag;
+    dz /= mag;
+  }
+
+  return {dx, dy, dz};
+};
+
+std::vector<float> SceneObject::CalculateNormalSpherical(float x, float y, float z, float eps=0.001) {
+  std::vector<float> cartesianNormal = CalculateNormal(x, y, z, eps);
+  float dx = cartesianNormal[0];
+  float dy = cartesianNormal[1];
+  float dz = cartesianNormal[2];
+
+  float theta = std::acos(dz);
+  float phi = std::atan2(dy, dx);
+
+  return {theta, phi};
+};
+
+
 Ray::Ray() {};
 
 Ray::Ray(float x_in, float y_in, float z_in, float theta_in, float phi_in, Color color_in) :
@@ -101,14 +129,27 @@ void Camera::March(int iter) {
 	    terminate = true;
 	    rayRef->color = finalColor;
 	    break;
+
 	  case SceneObjectType::TRANSPARENT:
 	    rayRef->color = minObject.color;
 	    break;
+
 	  case SceneObjectType::LENSE:
 	    rayRef->color = minObject.color;
 	    break;
+
 	  case SceneObjectType::MIRROR:
-	    rayRef->color = minObject.color;
+        std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
+        float normalTheta = surfaceNormal[0];
+        float normalPhi = surfaceNormal[1];
+
+        float reflectedTheta = 2 * normalTheta - rayRef->theta;
+        float reflectedPhi = 2 * normalPhi - rayRef->phi;
+
+        rayRef->theta = reflectedTheta;
+        rayRef->phi = reflectedPhi;
+        rayRef->cast(collisionThreshold); // Turn around and march a bit so as not to collide with the same spot
+
 	    break;
 	  }
 	}

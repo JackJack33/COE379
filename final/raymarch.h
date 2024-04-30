@@ -24,6 +24,9 @@ public:
   SceneObject();
   SceneObject(SceneObjectType type_in, Color color_in, std::function<float(float, float, float)> sDF_in);
   SceneObject(SceneObjectType type_in, Color color_in, std::vector<float> extraParam_in, std::function<float(float, float, float)> sDF_in);
+
+  std::vector<float> CalculateNormal(float x, float y, float z, float eps);
+  std::vector<float> CalculateNormalSpherical(float x, float y, float z, float eps);
 };
 
 class Ray {
