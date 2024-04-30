@@ -125,6 +125,7 @@ void Camera::March(int iter) {
 
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
+	    std::cout << "O";
 	    terminate = true;
 	    rayRef->color = finalColor;
 	    break;
@@ -138,6 +139,7 @@ void Camera::March(int iter) {
 	    break;
 
 	  case SceneObjectType::MIRROR:
+	    std::cout << "X";
 	    std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
 	    float normalTheta = surfaceNormal[0];
 	    float normalPhi = surfaceNormal[1];
