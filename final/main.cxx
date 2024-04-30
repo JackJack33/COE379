@@ -31,6 +31,8 @@ int main() {
   Color green(0, 255, 0);
   Color blue(0, 0, 255);
   Color black(0, 0, 0);
+
+  // be careful not to place objects on top of camera
   
   SceneObject redSphere(SceneObjectType::OPAQUE, red,
 			[](float x, float y, float z) { return sphereSDF(x, y, z, 5, 0, 0, 1); });
@@ -43,8 +45,8 @@ int main() {
   SceneObject mirrorSphere(SceneObjectType::MIRROR, red,
   			   [](float x, float y, float z) { return sphereSDF(x, y, z, 8, -1, -1, 1); });
   SceneObject redSwarm(SceneObjectType::OPAQUE, red,
-		       [](float x, float y, float z) { return swarmSDF(x, y, z, 0, 0, 0, 1, 5); });
-
+		       [](float x, float y, float z) { return swarmSDF(x, y, z, 2.5, 2.5, 2.5, 1, 20); });
+  
   //  std::vector<SceneObject> objects = {redSphere, blueSphere, greenSphere, mirrorSphere};
   std::vector<SceneObject> objects = {redSwarm};
   
