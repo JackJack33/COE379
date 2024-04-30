@@ -33,7 +33,7 @@ int main() {
   SceneObject mirrorPlane(SceneObjectType::MIRROR, red,
 			   [](float x, float y, float z) { return planeSDF(x, y, z, -4); });
 
-  std::vector<SceneObject> objects = {redSphere, greenSphere, blueSphere, mirrorPlane};
+  std::vector<SceneObject> objects = {greenSphere, mirrorPlane};
 
   Scene scene(objects, black);
   Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 100);
