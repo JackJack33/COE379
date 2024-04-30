@@ -13,6 +13,7 @@ Color Color::Interpolate(Color color1, Color color2, float t) {
   int r = static_cast<int>(color1.r * (1.0f - t) + color2.r * t);
   int g = static_cast<int>(color1.g * (1.0f - t) + color2.g * t);
   int b = static_cast<int>(color1.b * (1.0f - t) + color2.b * t);
+  if (g > 0) { std::cout << "G"; }
   return Color(r,g,b);
 }
 
@@ -125,7 +126,6 @@ void Camera::March(int iter) {
 
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
-	    std::cout << "o";
 	    terminate = true;
 	    rayRef->color = finalColor;
 	    break;
@@ -139,7 +139,6 @@ void Camera::March(int iter) {
 	    break;
 
 	  case SceneObjectType::MIRROR:
-	    std::cout << "X";
 	    std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
 	    float normalTheta = surfaceNormal[0];
 	    float normalPhi = surfaceNormal[1];
