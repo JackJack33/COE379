@@ -15,9 +15,9 @@ float sphereSDF(float x_in, float y_in, float z_in,
 
 float swarmSDF(float x_in, float y_in, float z_in,
 	       float x, float y, float z, float r, float spacing) {
-  float dx = std::fmod(x_in, spacing) - x;
-  float dy = std::fmod(y_in, spacing) - y;
-  float dz = std::fmod(z_in, spacing) - z;
+  float dx = std::fmod(std::abs(x_in), spacing) - x;
+  float dy = std::fmod(std::abs(y_in), spacing) - y;
+  float dz = std::fmod(std::abs(z_in), spacing) - z;
   return std::sqrt(dx*dx + dy*dy + dz*dz) - r;
 };
   
