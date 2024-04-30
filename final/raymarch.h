@@ -8,6 +8,8 @@ public:
 
   Color();
   Color(int r_in, int g_in, int b_in);
+
+  static Color Interpolate(Color color1, Color color2, float t);
 };
 
 enum class SceneObjectType { OPAQUE, TRANSPARENT, LENSE, MIRROR, LAST };
@@ -26,6 +28,7 @@ public:
 
 class Ray {
 public:
+  int iterations;
   float x, y, z, theta, phi;
   Color color;
 
@@ -53,16 +56,18 @@ public:
   int width, height;
   Scene scene;
   float collisionThreshold;
+  float distanceCutoff;
   
   std::vector<std::vector<Ray>> rays;
   
   Camera();
   Camera(float x_in, float y_in, float z_in, float theta_in, float phi_in,
            float fov_in, int width_in, int height_in,
-           Scene scene_in, float collisionThreshold_in);
+           Scene scene_in, float collisionThreshold_in, float distanceCutoff_in);
   
   void InitializeRays();
   void March(int iter);
+  float DistanceToCamera(float x_in, float y_in, float z_in);
   
   std::string ExportRayColors();
 };
