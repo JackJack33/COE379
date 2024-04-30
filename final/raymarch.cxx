@@ -148,7 +148,7 @@ void Camera::March(int iter) {
 
         rayRef->theta = reflectedTheta;
         rayRef->phi = reflectedPhi;
-        rayRef->cast(collisionThreshold); // Turn around and march a bit so as not to collide with the same spot
+        rayRef->Cast(collisionThreshold); // Turn around and march a bit so as not to collide with the same spot
 
 	    break;
 	  }

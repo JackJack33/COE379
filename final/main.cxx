@@ -26,9 +26,11 @@ int main() {
   SceneObject redSphere(SceneObjectType::OPAQUE, red,
 			[](float x, float y, float z) { return sphereSDF(x, y, z, 5, 0, 0, 1); });
   SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
-			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });			 
+			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });
+  SceneObject mirrorSphere(SceneObjectType::MIRROR, red,
+			   [](float x, float y, float z) { return sphereSDF(x, y, z, 13, 0, 0, 5); });
 
-  std::vector<SceneObject> objects = {redSphere, blueSphere};
+  std::vector<SceneObject> objects = {redSphere, blueSphere, mirrorSphere};
 
   Scene scene(objects, black);
   Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 20);
