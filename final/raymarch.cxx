@@ -89,13 +89,17 @@ void Camera::March(int iter) {
 
 	if (d < collisionThreshold) {
 
+	  float t = 1 + -1 / (float(rayRef->iterations + 1));
+	  Color finalColor = Color::Interpolate(minObject.color, Color(0,0,0), t); // Ambient Occlusion
+	  
 	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);
-	  float t = squaredDistanceToCamera / (distanceCutoff*distanceCutoff);
+	  t = squaredDistanceToCamera / (distanceCutoff*distanceCutoff);
+	  finalColor = Color::Interpolate(finalColor, scene.color, t); // Distance Fog
 	  
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
 	    terminate = true;
-	    rayRef->color = Color::Interpolate(minObject.color, scene.color, t);
+	    rayRef->color = finalColor;
 	    break;
 	  case SceneObjectType::TRANSPARENT:
 	    rayRef->color = minObject.color;
@@ -110,6 +114,7 @@ void Camera::March(int iter) {
 	}
 	if (!terminate) {
 	  rayRef->Cast(d);
+	  rayRef->iterations++;
 	}
       }
     }
