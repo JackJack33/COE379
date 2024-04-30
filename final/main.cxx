@@ -20,20 +20,23 @@ float planeSDF(float x, float y, float z, float h) {
 int main() {
 
   Color red(255, 0, 0);
+  Color green(0, 255, 0);
   Color blue(0, 0, 255);
   Color black(0, 0, 0);
   
   SceneObject redSphere(SceneObjectType::OPAQUE, red,
 			[](float x, float y, float z) { return sphereSDF(x, y, z, 5, 0, 0, 1); });
+  SceneObject greenSphere(SceneObjectType::OPAQUE, green,
+			  [](float x, float y, float z) {return sphereSDF(x, y, z, 15, 0, 0, 1); });
   SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
 			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });
-  SceneObject mirrorSphere(SceneObjectType::MIRROR, red,
-			   [](float x, float y, float z) { return sphereSDF(x, y, z, 10, -2, -2, 5); });
+  SceneObject mirrorPlane(SceneObjectType::MIRROR, red,
+			   [](float x, float y, float z) { return planeSDF(x, y, z, -3); });
 
-  std::vector<SceneObject> objects = {redSphere, blueSphere, mirrorSphere};
+  std::vector<SceneObject> objects = {redSphere, greenSphere, blueSphere, mirrorPlane};
 
   Scene scene(objects, black);
-  Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 20);
+  Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 50);
 
   camera.InitializeRays();
   camera.March(5);
