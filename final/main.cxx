@@ -26,7 +26,7 @@ int main() {
   SceneObject redSphere(SceneObjectType::OPAQUE, red,
 			[](float x, float y, float z) { return sphereSDF(x, y, z, 5, 0, 0, 1); });
   SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
-			 [](float x, float y, float z) { return sphereSDF(x, y, z, 7, 1, 0, 2.5); });			 
+			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 1.5); });			 
 
   std::vector<SceneObject> objects = {redSphere, blueSphere};
 
