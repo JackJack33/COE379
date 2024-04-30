@@ -13,7 +13,6 @@ Color Color::Interpolate(Color color1, Color color2, float t) {
   int r = static_cast<int>(color1.r * (1.0f - t) + color2.r * t);
   int g = static_cast<int>(color1.g * (1.0f - t) + color2.g * t);
   int b = static_cast<int>(color1.b * (1.0f - t) + color2.b * t);
-  std::cout << r << " " << g << " " << b << std::endl;
   return Color(r,g,b);
 }
 
@@ -123,9 +122,10 @@ void Camera::March(int iter) {
 	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);
 	  t = squaredDistanceToCamera / (distanceCutoff*distanceCutoff);
 	  finalColor = Color::Interpolate(finalColor, scene.color, t); // Distance Fog
-	  
+
 	  switch (minObject.type) {
 	  case SceneObjectType::OPAQUE:
+	    std::cout << "opaque" << std::endl;
 	    terminate = true;
 	    rayRef->color = finalColor;
 	    break;
@@ -139,17 +139,18 @@ void Camera::March(int iter) {
 	    break;
 
 	  case SceneObjectType::MIRROR:
-        std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
-        float normalTheta = surfaceNormal[0];
-        float normalPhi = surfaceNormal[1];
-
-        float reflectedTheta = 2 * normalTheta - rayRef->theta;
-        float reflectedPhi = 2 * normalPhi - rayRef->phi;
-
-        rayRef->theta = reflectedTheta;
-        rayRef->phi = reflectedPhi;
-        rayRef->Cast(collisionThreshold); // Turn around and march a bit so as not to collide with the same spot
-
+	    std::cout << "mirror" << std::endl;
+	    std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
+	    float normalTheta = surfaceNormal[0];
+	    float normalPhi = surfaceNormal[1];
+	    
+	    float reflectedTheta = 2 * normalTheta - rayRef->theta;
+	    float reflectedPhi = 2 * normalPhi - rayRef->phi;
+	    
+	    rayRef->theta = reflectedTheta;
+	    rayRef->phi = reflectedPhi;
+	    rayRef->Cast(collisionThreshold); // Turn around and march a bit so as not to collide with the same spot
+	    
 	    break;
 	  }
 	}
