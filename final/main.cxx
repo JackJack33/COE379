@@ -30,8 +30,8 @@ int main() {
 			  [](float x, float y, float z) {return sphereSDF(x, y, z, 15, -3, 0, 3); });
   SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
 			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });
-  SceneObject mirrorPlane(SceneObjectType::OPAQUE, red,
-			   [](float x, float y, float z) { return planeSDF(x, y, z, -4); });
+  SceneObject mirrorPlane(SceneObjectType::MIRROR, red,
+			   [](float x, float y, float z) { return planeSDF(x, y, z, -2.5); });
 
   std::vector<SceneObject> objects = {greenSphere, mirrorPlane};
 
