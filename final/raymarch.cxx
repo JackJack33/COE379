@@ -129,58 +129,6 @@ void Camera::March(int iter) {
 	    rayRef->color = finalColor;
 	    break;
 
-	  case SceneObjectType::TRANSPARENT:
-	    rayRef->color = minObject.color;
-	    break;
-
-	  case SceneObjectType::LENSE:
-	    rayRef->color = minObject.color;
-	    break;
-
-	  case SceneObjectType::MIRROR:
-	    std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
-	    float normalTheta = surfaceNormal[0];
-	    float normalPhi = surfaceNormal[1];
-	    
-	    float reflectedTheta = 2*(normalTheta - M_PI/2) - rayRef->theta;
-	    float reflectedPhi = rayRef->phi;
-	    if (abs(normalTheta - M_PI/2) > 0.0001) { // hacky but whatever
-	      reflectedPhi = 2*(normalPhi - M_PI/2) - rayRef->phi;
-	    }
-	    
-	    rayRef->theta = reflectedTheta;
-	    rayRef->phi = reflectedPhi;
-	    d = 0.1; // Turn around and march a bit so as not to collide with the same spot
-	    
-	    break;
-	  }
-	}
-
-	
-	
-	if (d < collisionThreshold) {
-	  
-	  float t = 1 - 1 / (1 + (0.2)*std::log(rayRef->iterations + 1));
-	  Color finalColor = Color::Interpolate(minObject.color, Color(0,0,0), t); // Ambient Occlusion
-
-	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);	  
-	  t = squaredDistanceToCamera / (distanceCutoff*distanceCutoff);
-	  finalColor = Color::Interpolate(finalColor, scene.color, t); // Distance Fog
-	  
-	  switch (minObject.type) {
-	  case SceneObjectType::OPAQUE:
-	    terminate = true;
-	    rayRef->color = finalColor;
-	    break;
-
-	  case SceneObjectType::TRANSPARENT:
-	    rayRef->color = minObject.color;
-	    break;
-
-	  case SceneObjectType::LENSE:
-	    rayRef->color = minObject.color;
-	    break;
-
 	  case SceneObjectType::MIRROR:
 	    std::vector<float> surfaceNormal = minObject.CalculateNormalSpherical(rayRef->x, rayRef->y, rayRef->z);
 	    float normalTheta = surfaceNormal[0];

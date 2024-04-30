@@ -12,7 +12,7 @@ public:
   static Color Interpolate(Color color1, Color color2, float t);
 };
 
-enum class SceneObjectType { OPAQUE, TRANSPARENT, LENSE, MIRROR, LAST };
+enum class SceneObjectType { OPAQUE, MIRROR, LAST };
 
 class SceneObject {
 public:

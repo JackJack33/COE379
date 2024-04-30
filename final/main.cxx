@@ -28,7 +28,7 @@ int main() {
 			[](float x, float y, float z) { return sphereSDF(x, y, z, 5, 0, 0, 1); });
   SceneObject greenSphere(SceneObjectType::OPAQUE, green,
 			  [](float x, float y, float z) {return sphereSDF(x, y, z, 15, -3, 0, 3); });
-  SceneObject blueSphere(SceneObjectType::MIRROR, blue,
+  SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
 			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });
   SceneObject mirrorPlane(SceneObjectType::MIRROR, red,
 			   [](float x, float y, float z) { return planeSDF(x, y, z, -5); });
