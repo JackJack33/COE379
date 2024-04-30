@@ -89,7 +89,7 @@ void Camera::March(int iter) {
 
 	if (d < collisionThreshold) {
 
-	  float t = 1 + -1 / (float(rayRef->iterations + 1));
+	  float t = 1 + -1 / float(rayRef->iterations);
 	  Color finalColor = Color::Interpolate(minObject.color, Color(0,0,0), t); // Ambient Occlusion
 	  
 	  float squaredDistanceToCamera = SquaredDistanceToCamera(rayRef->x, rayRef->y, rayRef->z);

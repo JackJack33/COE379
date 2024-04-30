@@ -31,7 +31,7 @@ int main() {
   std::vector<SceneObject> objects = {redSphere, blueSphere};
 
   Scene scene(objects, black);
-  Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 10);
+  Camera camera(0, 0, 0, 0, 0, M_PI / 2.0, 256, 256, scene, 0.00001, 20);
 
   camera.InitializeRays();
   camera.March(5);
