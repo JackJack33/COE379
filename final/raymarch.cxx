@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <omp.h>
 
 Color::Color() {};
 
@@ -105,6 +106,8 @@ void Camera::InitializeRays() {
 };
 
 void Camera::March(int iter) {
+#pragma omp parallel
+#pragma omp for schedule(dynamic) nowait collapse(2)
   for (int i = 0; i < width; i++) {
     for (int j = 0; j < height; j++) {
       bool terminate = false;

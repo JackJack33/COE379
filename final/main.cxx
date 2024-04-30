@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <omp.h>
 
 float sphereSDF(float x_in, float y_in, float z_in,
 		float x, float y, float z, float r) {
@@ -51,10 +52,19 @@ int main() {
   std::vector<SceneObject> objects = {redSwarm};
   
   Scene scene(objects, black);
-  Camera camera(0, 0, 0, 0, 0, M_PI / 1.5, 256, 256, scene, 0.001, 1000);
+  Camera camera(0, 0, 0, 0, 0, M_PI / 2, 512, 512, scene, 0.001, 1000);
 
-  camera.InitializeRays(); 
+  std::cout << "Scene Intialized" << std::endl;
+  
+  camera.InitializeRays();
+
+  std::cout << "Rays Initialized" << std::endl;
+
+  float tstart = omp_get_wtime();
   camera.March(100);
+  float duration = omp_get_wtime();
+
+  std::cout << "Marched in time=" << duration-tstart << std::endl;
   
   std::string output = camera.ExportRayColors();
 
