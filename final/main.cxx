@@ -42,17 +42,24 @@ int main() {
   SceneObject blueSphere(SceneObjectType::OPAQUE, blue,
 			 [](float x, float y, float z) { return sphereSDF(x, y, z, 8, 1, 1, 2.5); });
   SceneObject mirrorPlane(SceneObjectType::MIRROR, red,
-			   [](float x, float y, float z) { return planeSDF(x, y, z, -5); });
+			   [](float x, float y, float z) { return planeSDF(x, y, z, -3.5); });
   SceneObject mirrorSphere(SceneObjectType::MIRROR, red,
   			   [](float x, float y, float z) { return sphereSDF(x, y, z, 8, -1, -1, 1); });
   SceneObject redSwarm(SceneObjectType::OPAQUE, red,
 		       [](float x, float y, float z) { return swarmSDF(x, y, z, 2.5, 2.5, 2.5, 1, 5); });
-  
-  //  std::vector<SceneObject> objects = {redSphere, blueSphere, greenSphere, mirrorSphere};
+
+
+  // Collection of Spheres
+  //std::vector<SceneObject> objects = {redSphere, blueSphere, greenSphere};
+  // Mirror Plane
+  //std::vector<SceneObject> objects = {redSphere, blueSphere, greenSphere, mirrorPlane};
+  // Mirror Sphere
+  //std::vector<SceneObject> objects = {redSphere, blueSphere, greenSphere};
+  // Sphere Swarm
   std::vector<SceneObject> objects = {redSwarm};
   
   Scene scene(objects, black);
-  Camera camera(0, 0, 0, 0, 0, M_PI / 2, 512, 512, scene, 0.001, 1000);
+  Camera camera(0, 0, 0, 0, 0, M_PI / 2, 1920, 1080, scene, 0.001, 1000);
 
   std::cout << "Scene Intialized" << std::endl;
   
